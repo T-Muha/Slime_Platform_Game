@@ -1,0 +1,10 @@
+[
+	{
+		"Name": "Level One",
+		"Batch": "batchOne",
+		"Background": "absoluteBackImage",
+		"Platforms": "[platformOneImage, platformTwoImage]",
+		"PlatformPositions": "[[225, 290, 2],[500, 320, 1],[740, 340, 1],[990, 380, 1],[1280, 220, 2],[1560, 210, 1],[1830, 220, 2],[2120, 270, 1]]"
+	}
+]
+		

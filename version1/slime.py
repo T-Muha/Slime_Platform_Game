@@ -1,7 +1,9 @@
 import pyglet
+import json
 from pyglet import resource
 import time
 from game import resources, platform, player
+from levels import level_template
 
 ###################################################################
 #main control file: starts and updates game
@@ -10,45 +12,71 @@ from game import resources, platform, player
 
 GameWindow = pyglet.window.Window(1280, 720)
 bigBatch = pyglet.graphics.Batch()
-landable = []
 
-absoluteBack = pyglet.sprite.Sprite(img=resources.absoluteBackImage, x = 0, y = 0, batch=bigBatch)
+testMode = False
 
-player = player.Player(img=resources.playerImage, x=225, y=480, batch=bigBatch)
+if testMode:
+    currentDict = {}
+    currentDict["Name"] = "Level One"
+    currentDict["Window"] = GameWindow
+    currentDict["Batch"] = bigBatch
+    currentDict["Background"] = resources.absoluteBackImage
+    currentDict["PlatformTypes"] = [resources.testRoomFloorImage]
+    currentDict["PlatformPositions"] = [[160,40,0],[480,40,0],[800,40,0],[1120,40,0]]
+    currentLevel = level_template.LevelTemplate(currentDict)
+else:
+    currentDict = {}
+    currentDict["Name"] = "Level One"
+    currentDict["Window"] = GameWindow
+    currentDict["Batch"] = bigBatch
+    currentDict["Background"] = resources.absoluteBackImage
+    currentDict["PlatformTypes"] = [resources.platformOneImage, resources.platformTwoImage]
+    currentDict["PlatformPositions"] = [[225, 290, 1],[500, 320, 0],[740, 340, 0],[990, 380, 0],[1280, 220, 1],[1560, 210, 0],[1830, 220, 1],[2120, 270, 0]]
+    currentLevel = level_template.LevelTemplate(currentDict)
+
+
+
+player = player.Player(img=resources.playerImage, x=225, y=680, batch=bigBatch)
 GameWindow.push_handlers(player.keyHandler)
-gameObjects = [player]
-platforms = []
+gameObjects = [player, currentLevel]
 
-#set up the platforms
-#0 is x, 1 is y, 2 is sprite
-platformPositions = [[225, 290, 2],[390, 320, 1],[520, 340, 1],[660, 380, 1],[840, 220, 2],[1010, 210, 1],[1170, 220, 2],[1350, 270, 1]]
+#for object in currentLevel.platforms:
+#    gameObjects.append(object)
 
-for position in platformPositions:
-    if position[2] == 1:
-        platforms.append(platform.Platform(img=resources.platformOneImage, x=position[0], y=position[1], batch=bigBatch))
-    elif position[2] == 2:
-        platforms.append(platform.Platform(img=resources.platformTwoImage, x=position[0], y=position[1], batch=bigBatch))
+#def update(dt):
 
-gameObjects.extend(platforms)
-
-for platform in platforms:
-    GameWindow.push_handlers(platform.keyHandler)
-
+#    for platform in platforms:
+#        if platform.x - platform.width / 2 < player.x + player.width:
+#            if player.x < platform.x+platform.width/2 and player.y >= platform.y+platform.height/2-20 and player.y <= platform.y+platform.height/2+10:
+#                if player.falling:
+#                    player.landed(platform.y+platform.height/2)
+#                for object in gameObjects:
+#                    object.update(dt)
+#                return
+#    player.fall(dt)
+#    for object in gameObjects:
+#        object.update(dt)
 
 def update(dt):
-    for platform in platforms:
-        if platform.x-platform.width < player.x:
-            if player.x < platform.x+platform.width/2 and player.y >= platform.y+platform.height/2-5 and player.y <= platform.y+platform.height/2+10:
-                if player.falling:
-                    player.landed(platform.y+platform.height/2)
-                for object in gameObjects:
-                    object.update(dt)
-                return
+    for platform in currentLevel.platforms:
+        if checkLand(platform.x, platform.y, platform.width, platform.height, player.x, player.y, player.width):
+            if player.falling:
+                player.landed(platform.y+platform.height/2)
+            for object in gameObjects:
+                object.update(dt)
+            return
     player.fall(dt)
     for object in gameObjects:
         object.update(dt)
+
+def checkLand(platX, platY, platWidth, platHeight, playX, playY, playWidth):
+    if platX - platWidth / 2 < playX + playWidth:
+        if playX < platX + platWidth / 2 and playY >= platY + platHeight / 2 - 20 and playY <= platY + platHeight / 2 + 10:
+            return True
+    return False
+
+
     
-        
 
 @GameWindow.event
 def on_draw():
@@ -56,7 +84,7 @@ def on_draw():
     bigBatch.draw()
 
 
-pyglet.clock.schedule_interval(update, 1/100.0)
+pyglet.clock.schedule_interval(update, 1/60.0)
 
 if __name__ == '__main__':
     pyglet.app.run()

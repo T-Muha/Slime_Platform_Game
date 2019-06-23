@@ -14,6 +14,11 @@ def CenterImage(image):
     image.anchor_y = image.height // 2
 
 #load all of the image data
+
+
+
+testRoomFloorImage = pyglet.resource.image("floor.png")
+
 absoluteBackImage = pyglet.resource.image("absolute_back.png")
 playerImage = pyglet.resource.image("player.png")
 playerLeftImage = pyglet.resource.image("player_left.png")
@@ -26,7 +31,13 @@ playerSquashImage = pyglet.resource.image("player_squash.png")
 playerLeftSquashImage = pyglet.resource.image("player_left_squash.png")
 playerRightSquashImage = pyglet.resource.image("player_right_squash.png")
 
+tempPlatformImage = pyglet.resource.image("tempOne.png")
+
+
+
 playerSquashImage.anchor_x += playerSquashImage.width / 10
 
 CenterImage(platformOneImage)
 CenterImage(platformTwoImage)
+CenterImage(tempPlatformImage)
+CenterImage(testRoomFloorImage)
